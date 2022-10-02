@@ -1,40 +1,25 @@
 package com.gtappdevelopers.shonrandomgame;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.Window;
 import android.widget.TextView;
-import android.os.Bundle;
-
 import android.content.DialogInterface;
-import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
-import android.os.Bundle;
-import android.app.Activity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Random;
 
@@ -45,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private Editable currentGuess;
     private int con50;
     private int con100;
-    //    private int conMenu;
+    private int pressed;
     private int con10;
     private int conNew;
     private int gameStarted;
@@ -59,12 +44,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //check if its the first time im opening the program so i can start the shared prefrence
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = sharedPreferences.edit();
+        int total = sharedPreferences.getInt("total", -1);
+        if (total == -1) {
+            myEdit.putInt("total", 0);
+            myEdit.apply();
+        }
+
+        TextView textView1 = findViewById(R.id.totalGuess);
+        textView1.setText("Total Guesses: " + total);
+
 
         TextView aboutMe = findViewById(R.id.aboutmetext);
         aboutMe.setVisibility(View.INVISIBLE);
-
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
 
         TextView HighLow = findViewById(R.id.highlow1);
         HighLow.setText("Choose Mode");
@@ -72,18 +66,17 @@ public class MainActivity extends AppCompatActivity {
         TextView con = findViewById(R.id.pressAgain);
         con.setVisibility(View.INVISIBLE);
 
+        this.pressed = 0;
+        this.gameStarted = 0;
+        this.guessCount = 0;
+        this.numRange = 100;
+        this.rndNum = 0;
+        this.saveGuess = "0";
 
-        this.gameStarted=0;
-        this.guessCount=0;
-        this.numRange=100;
-        this.rndNum=0;
-        this.saveGuess="0";
-
-        this.con50=0;
-        this.con100=0;
-        this.con10=0;
-        this.conNew=0;
-
+        this.con50 = 0;
+        this.con100 = 0;
+        this.con10 = 0;
+        this.conNew = 0;
 
 
         final EditText edittext = (EditText) findViewById(R.id.edittext);
@@ -98,14 +91,11 @@ public class MainActivity extends AppCompatActivity {
         HighLow.setText("Choose Mode");
 
 
-
-    };
-
-
+    }
 
 
     public void submitAnswer(View v) {
-        if(gameStarted>0) {
+        if (gameStarted > 0) {
             hideCon();
             resetCons();
             final EditText edittext = (EditText) findViewById(R.id.edittext);
@@ -122,11 +112,17 @@ public class MainActivity extends AppCompatActivity {
 
             if (allNumbers == true) {
                 saveGuess = String.valueOf(currentGuess);
-//                TextView ViewYourGuess = findViewById(R.id.yourguess1);
-//                ViewYourGuess.setText("Your Guess: " + saveGuess);
+
                 guessCount++;
                 TextView GuessCount = findViewById(R.id.guessCounter);
                 GuessCount.setText("Guess Counter: " + guessCount);
+                UpdateTotal();
+
+                SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                int total = sharedPreferences.getInt("total", 1);
+                TextView textView1 = findViewById(R.id.totalGuess);
+                textView1.setText("Total Guesses: " + total);
+
 
                 //check if user won by guessing right number
                 int userGuess = Integer.parseInt(saveGuess);
@@ -146,29 +142,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
-
-
     }
 
+    public void clicked10(View v) {
 
-    public void clicked10(View v)
-    {
-
-        if(this.con10==1) {
+        if (this.con10 == 1) {
             hideCon();
             this.numRange = 10;
             restartGame();
             TextView HighLow = findViewById(R.id.highlow1);
             HighLow.setText("Enter Number 0-10");
-            this.rndNum= makeRndNum(numRange);
+            this.rndNum = makeRndNum(numRange);
 
 
-            this.con10=0;
+            this.con10 = 0;
             this.gameStarted++;
-        }
-        else
-        {
+        } else {
 
             resetCons();
             this.con10++;
@@ -178,24 +167,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void clicked50(View v) {
 
-    public void clicked50(View v)
-    {
-
-        if(this.con50==1) {
+        if (this.con50 == 1) {
             hideCon();
             this.numRange = 50;
             restartGame();
             TextView HighLow = findViewById(R.id.highlow1);
             HighLow.setText("Enter Number 0-50");
-            this.rndNum= makeRndNum(numRange);
+            this.rndNum = makeRndNum(numRange);
 
 
-            this.con50=0;
+            this.con50 = 0;
             this.gameStarted++;
-        }
-        else
-        {
+        } else {
 
             resetCons();
             this.con50++;
@@ -205,25 +190,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void clicked100(View v) {
 
-
-    public void clicked100(View v)
-    {
-
-        if(this.con100==1) {
+        if (this.con100 == 1) {
             hideCon();
             this.numRange = 100;
             restartGame();
             TextView HighLow = findViewById(R.id.highlow1);
             HighLow.setText("Enter Number 0-100");
-            this.rndNum= makeRndNum(numRange);
+            this.rndNum = makeRndNum(numRange);
 
 
-            this.con100=0;
+            this.con100 = 0;
             this.gameStarted++;
-        }
-        else
-        {
+        } else {
 
             resetCons();
             this.con100++;
@@ -233,18 +213,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public int makeRndNum(int numRange)
-    {
-        int temp=0;
+    public int makeRndNum(int numRange) {
+        int temp = 0;
         Random rnd = new Random();
-        temp=rnd.nextInt(numRange+1);
+        temp = rnd.nextInt(numRange + 1);
         return temp;
     }
 
-
-
-    public void restartGame()
-    {
+    public void restartGame() {
         hideCon();
         this.guessCount = 0;
         this.rndNum = 0;
@@ -257,12 +233,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void restartGameButton(View v)
-    {
+    public void restartGameButton(View v) {
 
-        if(this.conNew==1) {
+        if (this.conNew == 1) {
             hideCon();
-            this.gameStarted=0;
+            this.gameStarted = 0;
             this.guessCount = 0;
             this.numRange = 100;
             this.rndNum = 0;
@@ -272,10 +247,8 @@ public class MainActivity extends AppCompatActivity {
             HighLow.setText("Choose Mode");
             TextView GuessCount = findViewById(R.id.guessCounter);
             GuessCount.setText("Guess Counter: " + guessCount);
-            this.conNew=0;
-        }
-        else
-        {
+            this.conNew = 0;
+        } else {
             resetCons();
             this.conNew++;
             showCon();
@@ -283,42 +256,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-//
-//    public void menuButton(View v)
-//    {
-//
-//        if(this.conMenu==1) {
-//            //here i move to new activity
-//          /*this command below makes this activity close right after i close the menu in exit button */
-//            ActivityCompat.finishAffinity(this);
-//            Intent intent = new Intent(this, menu.class);
-//            startActivity(intent);
-//
-//
-//        }
-//        else
-//        {
-//            resetCons();
-//            this.conMenu++;
-//            showCon();
-//        }
-//
-//    }
-
-
-
-    public void winScreen()
-    {
+    public void winScreen() {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, "Well Done! You have won after " + guessCount + " tries!");
+        intent.putExtra(EXTRA_MESSAGE, "" + guessCount);
         ActivityCompat.finishAffinity(this);
         startActivity(intent);
 
     }
 
-    public void showCon()
-    {
+    public void showCon() {
         TextView aboutMe = findViewById(R.id.aboutmetext);
         aboutMe.setVisibility(View.INVISIBLE);
 
@@ -326,8 +272,7 @@ public class MainActivity extends AppCompatActivity {
         con.setVisibility(View.VISIBLE);
     }
 
-    public void hideCon()
-    {
+    public void hideCon() {
         TextView aboutMe = findViewById(R.id.aboutmetext);
         aboutMe.setVisibility(View.INVISIBLE);
 
@@ -335,19 +280,13 @@ public class MainActivity extends AppCompatActivity {
         con.setVisibility(View.INVISIBLE);
     }
 
+    public void resetCons() {
 
-
-
-    public void resetCons()
-    {
-
-        this.con50=0;
-        this.con100=0;
-        this.con10=0;
-        this.conNew=0;
+        this.con50 = 0;
+        this.con100 = 0;
+        this.con10 = 0;
+        this.conNew = 0;
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -356,18 +295,16 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.itemExit)
-        {
-            finish();
+        if (item.getItemId() == R.id.itemExit) {
+            this.pressed = 0;
+            onBackPressed();
             return true;
         }
-        if(item.getItemId() == R.id.itemAbout)
-        {
-            TextView aboutMe = findViewById(R.id.aboutmetext);
-            aboutMe.setVisibility(View.VISIBLE);
+        if (item.getItemId() == R.id.itemAbout) {
+            this.pressed = 1;
+            onBackPressed();
             return true;
         }
 
@@ -375,16 +312,54 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
 
 
+        if (pressed == 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("Do you want to exit?");
+            builder.setTitle("Alert !");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+                finish();
+            });
+            builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+                dialog.cancel();
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
 
 
+        if (pressed == 1) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("Do you want to read about me?");
+            builder.setTitle("Alert !");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+
+                TextView aboutMe = findViewById(R.id.aboutmetext);
+                aboutMe.setVisibility(View.VISIBLE);
+            });
+            builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+                dialog.cancel();
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
 
 
+    }
 
 
-
-
+    public void UpdateTotal() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = sharedPreferences.edit();
+        int total = sharedPreferences.getInt("total", 0);
+        myEdit.putInt("total", total + 1);
+        myEdit.apply();
+    }
 }
 
 

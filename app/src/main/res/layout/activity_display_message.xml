@@ -10,10 +10,22 @@
         android:id="@+id/youwon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="22sp"
         android:layout_marginHorizontal="33dp"
         android:layout_marginTop="33dp"
+        android:text="you have won after number of tries"
+        android:textSize="22sp"
+        tools:layout_editor_absoluteX="109dp"
+        tools:layout_editor_absoluteY="48dp" />
+
+
+    <TextView
+        android:id="@+id/totalGuess"
+        android:layout_width="255dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="102dp"
+        android:layout_marginTop="223dp"
+        android:text="Total Guesses: 123"
+        android:textSize="22sp"
         tools:layout_editor_absoluteX="109dp"
         tools:layout_editor_absoluteY="48dp" />
 
@@ -29,17 +41,16 @@
         android:text="Go Back" />
 
 
-
     <TextView
         android:id="@+id/pressAgain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
         android:layout_marginHorizontal="55dp"
         android:layout_marginTop="100dp"
-        android:visibility="visible"
+        android:text="Press Again to confirm"
         android:textColor="@color/teal_700"
-        android:text="Press Again to confirm" />
+        android:textSize="22sp"
+        android:visibility="visible" />
 
 
 </RelativeLayout>
